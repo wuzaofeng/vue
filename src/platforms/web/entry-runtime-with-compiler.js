@@ -31,7 +31,7 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
-  if (!options.render) {
+  if (!options.render) { // 判断有没有render函数， 判断是否有指定`template`的模版
     let template = options.template
     if (template) {
       if (typeof template === 'string') {
@@ -62,6 +62,7 @@ Vue.prototype.$mount = function (
         mark('compile')
       }
 
+      // 将模版转换成 render方法
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
         shouldDecodeNewlines,

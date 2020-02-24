@@ -99,7 +99,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     if (vm._isBeingDestroyed) {
       return
     }
-    callHook(vm, 'beforeDestroy')
+    callHook(vm, 'beforeDestroy') // 销毁前
     vm._isBeingDestroyed = true
     // remove self from parent
     const parent = vm.$parent
@@ -122,9 +122,9 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // call the last hook...
     vm._isDestroyed = true
     // invoke destroy hooks on current rendered tree
-    vm.__patch__(vm._vnode, null)
+    vm.__patch__(vm._vnode, null) // 通知子组件销毁
     // fire destroyed hook
-    callHook(vm, 'destroyed')
+    callHook(vm, 'destroyed') // 销毁后
     // turn off all instance listeners.
     vm.$off()
     // remove __vue__ reference
@@ -164,7 +164,8 @@ export function mountComponent (
       }
     }
   }
-  callHook(vm, 'beforeMount')
+  // 生命周期 beforeMount
+  callHook(vm, 'beforeMount') // 挂载前
 
   let updateComponent
   /* istanbul ignore if */
@@ -187,17 +188,17 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
-      vm._update(vm._render(), hydrating)
+      vm._update(vm._render(), hydrating) // 渲染
     }
   }
 
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  new Watcher(vm, updateComponent, noop, {
+  new Watcher(vm, updateComponent, noop, { // 渲染watcher
     before () {
       if (vm._isMounted && !vm._isDestroyed) {
-        callHook(vm, 'beforeUpdate')
+        callHook(vm, 'beforeUpdate') // 更新前
       }
     }
   }, true /* isRenderWatcher */)
@@ -207,7 +208,7 @@ export function mountComponent (
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
     vm._isMounted = true
-    callHook(vm, 'mounted')
+    callHook(vm, 'mounted') // 挂载完成
   }
   return vm
 }

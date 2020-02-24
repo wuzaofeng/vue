@@ -14,12 +14,12 @@ import { isNonPhrasingTag } from 'web/compiler/util'
 import { unicodeLetters } from 'core/util/lang'
 
 // Regular Expressions for parsing tags and attributes
-const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
+const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/ // 匹配属性的
 const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeLetters}]*`
 const qnameCapture = `((?:${ncname}\\:)?${ncname})`
-const startTagOpen = new RegExp(`^<${qnameCapture}`)
-const startTagClose = /^\s*(\/?)>/
-const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
+const startTagOpen = new RegExp(`^<${qnameCapture}`) // 标签开头的正则 捕获内容是标签名 <div>
+const startTagClose = /^\s*(\/?)>/ // 匹配标签结束的 >
+const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`) // 匹配标签结尾的</div>
 const doctype = /^<!DOCTYPE [^>]+>/i
 // #7298: escape - to avoid being pased as HTML comment when inlined in page
 const comment = /^<!\--/
@@ -49,7 +49,7 @@ function decodeAttr (value, shouldDecodeNewlines) {
   return value.replace(re, match => decodingMap[match])
 }
 
-export function parseHTML (html, options) {
+export function parseHTML (html, options) { // <div id="container"><p>hello</p><span>world</span></div>
   const stack = []
   const expectHTML = options.expectHTML
   const isUnaryTag = options.isUnaryTag || no
@@ -102,7 +102,7 @@ export function parseHTML (html, options) {
         }
 
         // Start tag:
-        const startTagMatch = parseStartTag()
+        const startTagMatch = parseStartTag() // <div id="container"><p>hello</p><span>world</span></div>
         if (startTagMatch) {
           handleStartTag(startTagMatch)
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
@@ -183,23 +183,23 @@ export function parseHTML (html, options) {
   }
 
   function parseStartTag () {
-    const start = html.match(startTagOpen)
+    const start = html.match(startTagOpen) //<div id="container"><p>hello</p><span>world</span></div>
     if (start) {
       const match = {
         tagName: start[1],
         attrs: [],
         start: index
       }
-      advance(start[0].length)
+      advance(start[0].length) // id="container"><p>hello</p><span>world</span></div>
       let end, attr
-      while (!(end = html.match(startTagClose)) && (attr = html.match(attribute))) {
+      while (!(end = html.match(startTagClose)) && (attr = html.match(attribute))) { // ><p>hello</p><span>world</span></div>
         attr.start = index
         advance(attr[0].length)
         attr.end = index
         match.attrs.push(attr)
       }
       if (end) {
-        match.unarySlash = end[1]
+        match.unarySlash = end[1] // <p>hello</p><span>world</span></div>
         advance(end[0].length)
         match.end = index
         return match

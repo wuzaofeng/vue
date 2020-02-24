@@ -49,13 +49,16 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
-    initLifecycle(vm)
-    initEvents(vm)
-    initRender(vm)
+    // 初始化事件 & 生命周期
+    initLifecycle(vm) // 1.初始化组件的父子关系
+    initEvents(vm) // 2. 初始化组件事件
+    initRender(vm) // 3. 初始化slot以及$createElement方法
     callHook(vm, 'beforeCreate')
-    initInjections(vm) // resolve injections before data/props
-    initState(vm)
-    initProvide(vm) // resolve provide after data/props
+
+    // 初始化注入 & 校验
+    initInjections(vm) // resolve injections before data/props // 4. 解析inject
+    initState(vm) // 5. 初始化状态 响应式数据原理/method/watch
+    initProvide(vm) // resolve provide after data/props // 6. 解析provide
     callHook(vm, 'created')
 
     /* istanbul ignore if */
@@ -65,7 +68,8 @@ export function initMixin (Vue: Class<Component>) {
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
-    if (vm.$options.el) {
+    // 是否指定的“el"选项
+    if (vm.$options.el) { // runtime 运行时， 不能编译模版 & runtime-with-complier template
       vm.$mount(vm.$options.el)
     }
   }

@@ -99,7 +99,7 @@ function callUpdatedHooks (queue) {
     const watcher = queue[i]
     const vm = watcher.vm
     if (vm._watcher === watcher && vm._isMounted && !vm._isDestroyed) {
-      callHook(vm, 'updated')
+      callHook(vm, 'updated') // 更新时候调用
     }
   }
 }
